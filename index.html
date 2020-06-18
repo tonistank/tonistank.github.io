@@ -1,1 +1,169 @@
-<h1>高兴学长早上好！</h1>
+<meta charset="utf-8">
+<style>
+	body {
+		background: black;
+		color: white;
+		/*font-family: Monospace;*/
+		font-family: 'DejaVu Sans Mono';
+		font-size: 15px;
+	}
+    @font-face {
+        font-family: 'DejaVu Sans Mono';
+        src: url('Deja Vu Sans Mono.ttf');
+    }
+	span#blink {
+		margin-right: -0.6em;
+	}
+	info {
+		color: rgb(240,41,41);
+	}
+	path {
+		color: rgb(114,159,207);
+	}
+</style>
+<script>
+    function htmlspecialchars(str) { 
+        var result = '';
+        for(var i=0; i<str.length; i++) {
+            switch(str[i]) {
+                case ' ': result+='&nbsp;'; break;
+                case '<': result+='&lt;'; break;
+                case '>': result+='&gt;'; break;
+                case '&': result+='&amp;'; break;
+                case '"': result+='&quot;'; break;
+                case '\'': result+='&apos;'; break;
+                case '￠': result+='&cent;'; break;
+                case '£': result+='&pound;'; break;
+                case '¥': result+='&yen;'; break;
+                case '€': result+='&euro;'; break;
+                case '§': result+='&sect;'; break;
+                case '©': result+='&copy;'; break;
+                case '®': result+='&reg;'; break;
+                case '™': result+='&trade;'; break;
+                case '×': result+='&times;'; break;
+                case '÷': result+='&divide;'; break;
+                case '\n': result+='<br />\n'; break;
+                default: result+=str[i];
+            }
+        }
+        return result;
+    }
+    function closeWindows() {
+		var userAgent = navigator.userAgent;
+		if (userAgent.indexOf("Firefox") != -1 || userAgent.indexOf("Chrome") !=-1) {
+				window.location.href="about:blank";
+				window.close();
+		} else {
+				window.opener = null;
+				window.open("", "_self");
+				window.close();
+		}
+    }
+ //    var sleep = function(time) {
+	//     var startTime = new Date().getTime() + parseInt(time, 10);
+	//     while(new Date().getTime() < startTime) {}
+	// };
+	function sendMessage(strings) {
+		document.getElementById("output").innerHTML+='<div id="line"><div style="float: left;"><info>root@kali</info>:<path>~</path>#&nbsp;</div>'+(strings==''?'<br />':strings)+'</div>';
+	}
+    var tmp = '';
+    var strings = '';		//光标前面的字符串
+    var tmpStrings = '';	//光标后面的字符串
+    var ArrowIndex = 0;		//光标偏移量
+    var CtrlKeyCombination = 0;
+    var ShiftKeyCombination = 0;
+    var CtrlC = 0;
+    var CtrlV = 0;
+    var Insert = 0;
+    document.addEventListener("paste", paste);
+    function paste(event) {
+    	var clipboardData = (event.clipboardData || window.clipboardData);
+    	var tmpText = clipboardData.getData("text");
+    	strings+=tmpText;
+    	if(Insert) { if(tmpText.length<=tmpStrings.length) tmpStrings = tmpStrings.substr(tmpText.length, tmpStrings.length); else tmpStrings = '';}
+        document.getElementById("a").innerHTML = htmlspecialchars(strings)+'<span id="blink">'+(Insert?'▌':'█')+'</span>'+htmlspecialchars(tmpStrings);
+        CtrlV = 1;
+    }
+    document.addEventListener("keydown", keydown);
+    function keydown(event) {
+        switch (event.key) {		//keyCode表示键盘编码, key代表键盘输入的符号
+            case 'Alt': break;
+            case 'ArrowDown': break;
+            case 'ArrowLeft': if(strings.length>=1) { ++ArrowIndex; tmpStrings=strings[strings.length-1]+tmpStrings; strings=strings.substr(0, strings.length-1); } break;
+            case 'ArrowRight': if(tmpStrings.length>=1) { --ArrowIndex; strings=strings+tmpStrings[0]; tmpStrings=tmpStrings.substr(1, tmpStrings.length); } break;
+            case 'ArrowUp': break;
+            case 'Spacebar': strings += ' '; break; //兼容IE浏览器
+            case 'Backspace': strings = strings.substr(0, strings.length - 1); break;
+            case 'CapsLock': break;
+            case 'ContextMenu': break;
+            case 'Control': CtrlKeyCombination = 1; break;
+            case 'Delete': if(tmpStrings.length>=1) tmpStrings = tmpStrings.substr(1, tmpStrings.length); break;
+            case 'End': strings = strings + tmpStrings; tmpStrings = ''; break;
+            case 'Enter': if(CtrlKeyCombination) { strings += '\n'; } else { sendMessage(htmlspecialchars(strings+tmpStrings)); strings = ''; tmpStrings = ''; } break;
+            case 'Escape': break;
+            case 'F1': break;
+            case 'F2': break;
+            case 'F3': break;
+            case 'F4': break;
+            case 'F5': break;
+            case 'F6': break;
+            case 'F7': break;
+            case 'F8': break;
+            case 'F9': break;
+            case 'F10': break;
+            case 'F11': break;
+            case 'F12': break;
+            case 'Insert': if(!Insert) Insert = 1; else Insert = 0; break;
+            case 'Home': tmpStrings = strings + tmpStrings; strings = ''; break;
+            case 'Meta': break;
+            case 'NumLock': break;
+            case 'PageDown': break;
+            case 'PageUp': break;
+            case 'Pause': break;
+            case 'ScrollLock': break;
+            case 'Shift': ShiftKeyCombination = 1; break;
+            case 'Tab': strings += ' '; break;
+            case 'c': if (CtrlKeyCombination) { strings += '^C'; CtrlC = 1; break; }
+            case 'v': if (CtrlKeyCombination) { CtrlV=0; break; }
+            case 'z': if (CtrlKeyCombination) { strings += '^Z'; closeWindows(); break; }
+            default: strings += event.key; if(Insert&&tmpStrings.length>=1) tmpStrings = tmpStrings.substr(1, tmpStrings.length);
+        }
+        document.getElementById("a").innerHTML = htmlspecialchars(strings)+'<span id="blink">'+(Insert?'▌':'█')+'</span>'+htmlspecialchars(tmpStrings);
+        if (CtrlC) {
+            strings = '';
+            tmpStrings = '';
+            CtrlC = 0;
+        }
+	    if(event.ctrlKey) {
+            CtrlKeyCombination = 1;
+		} else {
+            CtrlKeyCombination = 0;
+		}
+    }
+</script>
+<div id="output"></div>
+<div id="input"><div style="float: left;"><info>root@kali</info>:<path>~</path>#&nbsp;</div><div id="a"><span id="blink">█</span></div></div>
+<script language="javascript">
+    var index = 0;
+    var word = document.getElementById("textdiv").innerHTML;
+
+    function type() {
+        if(index==word.length)
+            clearInterval(con);
+        document.getElementById("textdiv").innerHTML = word.substring(0, index++)+'<span id="blink">█</span>';
+    }
+    var con = setInterval(type, 100);
+</script>
+<script language="javascript">
+    var status = 1;
+    function changeColor(){
+        if(status==1) {
+            document.getElementById("blink").style.color="white";
+            status=0;
+        } else {
+            document.getElementById("blink").style.color="black";
+            status=1;
+        }
+    }
+    setInterval("changeColor()",500);
+</script>
