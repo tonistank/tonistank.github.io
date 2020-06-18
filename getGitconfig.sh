@@ -79,7 +79,7 @@ then
 else
 	if [ ! -f .gitignore ]
 	then
-		echo ${0:2} >> .gitignore
+		echo ${0:1} >> .gitignore
 	fi
 	checkGitConfig
 	checkArgs
