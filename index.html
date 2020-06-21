@@ -114,10 +114,10 @@
 		if(Insert) { if(tmpText.length<=tmpStrings.length) tmpStrings = tmpStrings.substr(tmpText.length, tmpStrings.length); else tmpStrings = '';}
 		document.getElementById("a").innerHTML = htmlspecialchars(strings)+'<span id="blink">'+(Insert?'▌':'█')+'</span>'+htmlspecialchars(tmpStrings);
 		CtrlV = 1;
-		CtrlKeyCombination = 0;
 	}
 	document.addEventListener("keydown", keydown);
 	function keydown(event) {
+		if(event.ctrlKey) { CtrlKeyCombination = 1; } else { CtrlKeyCombination = 0; }
 		switch (event.key) {		//keyCode表示键盘编码, key代表键盘输入的符号
 			case 'Alt': break;
 			case 'ArrowDown': if(countLines()) { if(commandLineNumber<countLines()-1&&commandLineNumber>=0) { strings = getNextMessage(++commandLineNumber); strings = strings=='<br>'?'':strings; } else { strings = tmpCommands; } } break;
@@ -155,22 +155,16 @@
 			case 'ScrollLock': break;
 			case 'Shift': ShiftKeyCombination = 1; break;
 			case 'Tab': strings += ' '; break;
-			case 'c': if (CtrlKeyCombination) { strings += '^C'; CtrlC = 1; break; }
 			case 'd': if (CtrlKeyCombination) { strings += '^D'; closeWindows(); break; }
-			case 'v': if (CtrlV) { CtrlV=0; CtrlKeyCombination = 0; break; } break;
 			case 'z': if (CtrlKeyCombination) { strings += '^Z'; closeWindows(); break; }
+			case 'c': if (CtrlKeyCombination) { strings += '^C'; CtrlC = 1; break; }
+			case 'v': if (CtrlKeyCombination) { CtrlV = 0; break; }
 			default: strings += event.key; if(Insert&&tmpStrings.length>=1) tmpStrings = tmpStrings.substr(1, tmpStrings.length);
 		}
 		document.getElementById("a").innerHTML = htmlspecialchars(strings)+'<span id="blink">'+(Insert?'▌':'█')+'</span>'+htmlspecialchars(tmpStrings);
 		if (CtrlC) {
-			strings = '';
-			tmpStrings = '';
+			strings = tmpStrings = '';
 			CtrlC = 0;
-		}
-		if(event.ctrlKey) {
-			CtrlKeyCombination = 1;
-		} else {
-			CtrlKeyCombination = 0;
 		}
 	}
 	//预定的消息记录
