@@ -116,6 +116,13 @@
 	var Insert = 0;
 	var commandLineNumber = 0;
 	var tmpCommands = '';
+	document.onkeydown = function(e) { //屏蔽部分按键
+		e = e || event;
+		switch (e.key) {
+			case 'ArrowDown': return false;
+			case 'ArrowUp': return false;
+		}
+	}
 	document.addEventListener("paste", paste);
 	function paste(event) {
 		var clipboardData = (event.clipboardData || window.clipboardData);
