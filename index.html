@@ -7,10 +7,20 @@
 		/*font-family: Monospace;*/
 		font-family: 'DejaVu Sans Mono';
 		font-size: 15px;
-		word-wrap: break-word;  
-		word-break: break-all;  
-		/* overflow: hidden; */
-		height: 400px; 
+		word-wrap: break-word;
+		word-break: break-all;
+	}
+	::selection {
+	    color: black;
+	    background: white;
+	}
+	::-moz-selection {
+	    color: black;
+	    background: white;
+	}
+	::-webkit-selection {
+	    color: black;
+	    background: white;
 	}
 	@font-face {
 		font-family: 'DejaVu Sans Mono';
@@ -92,7 +102,7 @@
 	//发送消息
 	function sendMessage(strings) {
 		document.getElementById("output").innerHTML+='<div id="line"><div style="float: left;"><info>root@kali</info>:<path>~</path>#&nbsp;</div>'+(strings==''?'<br />':strings)+'</div>\n';
-		window.scroll({top: document.body.clientHeight, left: 0, behavior: 'smooth'}); //自动滚动到页底
+		window.scroll({top: 1024*1024*1024*1024/*document.body.clientHeight*/, left: 0, behavior: 'smooth'}); //自动滚动到页底
 	}
 	//键盘输入驱动
 	var tmp = '';
