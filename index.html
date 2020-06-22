@@ -58,9 +58,35 @@
 				case '™': result+='&trade;'; break;
 				case '×': result+='&times;'; break;
 				case '÷': result+='&divide;'; break;
-				case '\n': result+='<br />\n'; break;
+				case '\n': result+='<br />'; break;
 				default: result+=str[i];
 			}
+		}
+		return result;
+	}
+	function htmlspecialchars_decode(str) { 
+		var result = str;
+		if(str!='<br>') {
+			result = result.replace(/&nbsp;/g, ' ');
+			result = result.replace(/&lt;/g, '<');
+			result = result.replace(/&gt;/g, '>');
+			result = result.replace(/&amp;/g, '&');
+			result = result.replace(/&quot;/g, '"');
+			result = result.replace(/&apos;/g, '\'');
+			result = result.replace(/&cent;/g, '￠');
+			result = result.replace(/&pound;/g, '£');
+			result = result.replace(/&yen;/g, '¥');
+			result = result.replace(/&euro;/g, '€');
+			result = result.replace(/&sect;/g, '§');
+			result = result.replace(/&copy;/g, '©');
+			result = result.replace(/&reg;/g, '®');
+			result = result.replace(/&trade;/g, '™');
+			result = result.replace(/&times;/g, '×');
+			result = result.replace(/&divide;/g, '÷');
+			result = result.replace(/<br \/>/g, '\n');
+			result = result.replace(/<br>/g, '\n');
+		} else {
+			result = '';
 		}
 		return result;
 	}
@@ -92,18 +118,19 @@
 			commandLineNumber = 0;
 		}
 		var commandList = document.getElementById("output").innerHTML.split("\n");
-		return /<\/div>(.*?)<\/div>/.exec(commandList[index])[1];
+		return htmlspecialchars_decode(/<\/div>(.*?)<\/div>/.exec(commandList[index])[1]);
 	}
 	//获取下一条消息
 	function getNextMessage(index) {
 		var commandList = document.getElementById("output").innerHTML.split("\n");
-		return /<\/div>(.*?)<\/div>/.exec(commandList[index])[1];
+		return htmlspecialchars_decode(/<\/div>(.*?)<\/div>/.exec(commandList[index])[1]);
 	}
 	//发送消息
 	function sendMessage(strings) {
 		document.getElementById("output").innerHTML+='<div id="line"><div style="float: left;"><info>root@kali</info>:<path>~</path>#&nbsp;</div>'+(strings==''?'<br />':strings)+'</div>\n';
 		window.scroll({top: 1024*1024*1024*1024/*document.body.clientHeight*/, left: 0, behavior: 'smooth'}); //自动滚动到页底
 	}
+	document.write(htmlspecialchars_decode(htmlspecialchars("asdfasfd<asdf>>><<< @#&<br />asdf\nadsfasd")));
 	//键盘输入驱动
 	var tmp = '';
 	var strings = '';		//光标前面的字符串
@@ -121,6 +148,8 @@
 		switch (e.key) {
 			case 'ArrowDown': return false;
 			case 'ArrowUp': return false;
+			case 'Home': return false;
+			case 'End': return false;
 		}
 	}
 	document.addEventListener("paste", paste);
@@ -135,12 +164,13 @@
 	document.addEventListener("keydown", keydown);
 	function keydown(event) {
 		if(event.ctrlKey) { CtrlKeyCombination = 1; } else { CtrlKeyCombination = 0; }
+		window.scroll({top: 1024*1024*1024*1024/*document.body.clientHeight*/, left: 0, behavior: 'smooth'}); //自动滚动到页底
 		switch (event.key) {		//keyCode表示键盘编码, key代表键盘输入的符号
 			case 'Alt': break;
-			case 'ArrowDown': if(countLines()) { if(commandLineNumber<countLines()-1&&commandLineNumber>=0) { strings = getNextMessage(++commandLineNumber); strings = strings=='<br>'?'':strings; } else { strings = tmpCommands; } } break;
+			case 'ArrowDown': if(countLines()) { if(commandLineNumber<countLines()-1&&commandLineNumber>=0) { strings = getNextMessage(++commandLineNumber); strings = strings=='<br />'?'':strings; } else { strings = tmpCommands; } } break;
 			case 'ArrowLeft': if(strings.length>=1) { ++ArrowIndex; tmpStrings=strings[strings.length-1]+tmpStrings; strings=strings.substr(0, strings.length-1); } break;
 			case 'ArrowRight': if(tmpStrings.length>=1) { --ArrowIndex; strings=strings+tmpStrings[0]; tmpStrings=tmpStrings.substr(1, tmpStrings.length); } break;
-			case 'ArrowUp': if(countLines()) { if(commandLineNumber==countLines()) tmpCommands = strings; strings = getLastMessage(--commandLineNumber); strings = strings=='<br>'?'':strings; } break;
+			case 'ArrowUp': if(countLines()) { if(commandLineNumber==countLines()) tmpCommands = strings; strings = getLastMessage(--commandLineNumber); strings = strings=='<br />'?'':strings; } break;
 			case 'Spacebar': strings += ' '; break; //兼容IE浏览器
 			case 'Backspace': strings = strings.substr(0, strings.length - 1); break;
 			case 'CapsLock': break;
@@ -148,7 +178,7 @@
 			case 'Control': CtrlKeyCombination = 1; break;
 			case 'Delete': if(tmpStrings.length>=1) tmpStrings = tmpStrings.substr(1, tmpStrings.length); break;
 			case 'End': strings = strings + tmpStrings; tmpStrings = ''; break;
-			case 'Enter': if(CtrlKeyCombination) { strings += '\n'; } else { sendMessage(htmlspecialchars(strings+tmpStrings)); strings = ''; tmpStrings = ''; } commandLineNumber = countLines();break;
+			case 'Enter': if(CtrlKeyCombination) { strings += '\n'; } else { sendMessage(htmlspecialchars(strings+tmpStrings)); strings = ''; tmpStrings = ''; } commandLineNumber = countLines(); break;
 			case 'Escape': break;
 			case 'F1': break;
 			case 'F2': break;
@@ -185,7 +215,7 @@
 		}
 	}
 	//预定的消息记录
-	var index = 0;
+	/*var index = 0;
 	var word = document.getElementById("output").innerHTML;
 
 	function type() {
@@ -193,8 +223,8 @@
 			clearInterval(con);
 		document.getElementById("output").innerHTML = word.substring(0, index++)+'<span id="blink">█</span>';
 	}
+	var con = setInterval(type, 100);*/
 	//闪烁的光标
-	var con = setInterval(type, 100);
 	var status = 1;
 	function changeColor(){
 		if(status==1) {
