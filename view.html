@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Image Viewer</title>
+		<style>
+			img {
+				height: 600px;
+			}
+			canvas {
+				border: 1px solid;
+			}
+			div#viewingarea {
+				position: absolute;
+				background: #33333333;
+				pointer-events: none;
+			}
+		</style>
+		<script>
+			sltOrgX = 0;
+			sltOrgY = 0;
+			function between(n, min, max) {
+				if(n >= min && n <= max) {
+					return n;
+				} else if(n < min) {
+					return min;
+				} else if(n > max) {
+					return max;
+				}
+			}
+			function viewing(event) {
+				canvasElm = document.getElementById("canvas");
+				canvasElm = document.getElementById("canvas");
+				imgcxt = canvasElm.getContext("2d");
+				orgimg = document.getElementById("orgimg");
+				sltOrgX = between(orgimg.naturalWidth/event.target.naturalWidth*(event.offsetX*(event.target.naturalWidth/event.target.width))-290, 0, orgimg.naturalWidth - 580);
+				sltOrgY = between(orgimg.naturalHeight/event.target.naturalHeight*(event.offsetY*(event.target.naturalHeight/event.target.height))-290, 0, orgimg.naturalHeight - 580);
+				imgcxt.drawImage(orgimg, sltOrgX, sltOrgY, 580, 580, 10, 10, 580, 580);
+				viewingarea = document.getElementById("viewingarea");
+				viewingarea.style.width = 580/orgimg.naturalWidth*event.target.width + "px";
+				viewingarea.style.height = 580/orgimg.naturalHeight*event.target.height + "px";
+				viewingarea.style.top = between(event.offsetY - parseInt(viewingarea.style.height)/2 + event.target.y, event.target.y, event.target.y + parseInt(event.target.height) - parseInt(viewingarea.style.height)) + "px";
+				viewingarea.style.left = between(event.offsetX - parseInt(viewingarea.style.width)/2 + event.target.x, event.target.x, event.target.x + parseInt(event.target.width) - parseInt(viewingarea.style.width)) + "px";
+			}
+		</script>
+	</head>
+	<body>
+		<div id="viewingarea"></div>
+		<img src="preview.jpg" onmousemove="viewing(event)"/>
+		<img id="orgimg" src="view.jpg" style="display: none;"/>
+		<canvas id="canvas" width="600" height="600"></canvas>
+	</body>
+</html>
